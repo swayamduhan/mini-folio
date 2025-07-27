@@ -1,0 +1,28 @@
+canvas {
+    width: 100vw;
+    height: 100vh;
+}
+
+.side-text {
+    color: #ccc;
+    font-family: "Studio6";
+    position: absolute;
+    font-size: 20px;
+    padding: 10px;
+    text-align:end;
+    bottom: 0;
+    right: 0;
+    width: 1000px;
+    color: #555
+}
+
+.download-btn {
+    white-space: nowrap;
+    font-family: "Studio6";
+    font-size: 30px;
+}
+
+@font-face {
+    font-family: "Studio6";
+    src: url("/fonts/Studio6-Regular.ttf");
+}
