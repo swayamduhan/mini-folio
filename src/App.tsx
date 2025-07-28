@@ -127,9 +127,9 @@ function WavyButton(){
     <>
     <mesh
       ref={buttonMeshRef} 
-      rotation={[0, -0.3, 0]}
+      rotation={[0, -0.4, 0]}
       onClick={() => window.open("/swayam-resume.pdf", "_blank")}
-      position={[0.6, 0, 0]}
+      position={[1.5, 0, 0]}
       >
       <planeGeometry 
         args={[2, 1, 24, 24]}
