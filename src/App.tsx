@@ -109,7 +109,7 @@ function WavyButton(){
   const buttonRef = useRef<THREE.Mesh>(null)
 
   return (
-    <mesh>
+    <mesh ref={buttonRef}>
       <planeGeometry 
         args={[2, 1, 24, 24]}
       />
