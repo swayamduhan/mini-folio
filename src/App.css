@@ -16,10 +16,19 @@ canvas {
     color: #555
 }
 
-.download-btn {
-    white-space: nowrap;
+.resume-btn {
+    position: absolute;
     font-family: "Studio6";
-    font-size: 30px;
+    font-size: 40px;
+    top: -9999px;
+    left: -9999px;
+    width: 400px;
+    height: 150px;
+    color: white;
+    display: grid;
+    place-items: center;
+    z-index: -1;
+
 }
 
 @font-face {

@@ -1,9 +1,11 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import './App.css'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
-import { Html, Text } from '@react-three/drei'
+import { Text } from '@react-three/drei'
 import buttonVertexShader from "./shaders/button/vertex.glsl?raw"
+import buttonFragmentShader from "./shaders/button/fragment.glsl?raw"
+import html2canvas from 'html2canvas'
 
 function StarField(){
   const starsRef = useRef<THREE.Points>(null)
@@ -63,7 +65,7 @@ function AboutText(){
   const availableRef = useRef(null)
   const [active, setActive] = useState(false)
   return (
-    <group position={[-2.2, 1, 0]} rotation={[0.1, 0.1, 0]}>
+    <group position={[-2.2, 0.5, 0]} rotation={[0.1, 0.1, 0]}>
       <Text font='/fonts/Studio6-Black.ttf' color={"#ccc"} position={[0,0,0]} fontSize={0.6} lineHeight={0.9}>
         {'Swayam\nDuhan'}
       </Text>
@@ -106,25 +108,73 @@ function CameraParallax(){
 }
 
 function WavyButton(){
-  const buttonRef = useRef<THREE.Mesh>(null)
+  const buttonMeshRef = useRef<THREE.Mesh>(null)
+  const textureLoader = new THREE.TextureLoader()
+  const textMap = textureLoader.load("/captured_button.png")
+  const uniforms = useRef({
+    uTime: { value: 0 },
+    uTextTexture : { value: textMap }
+  })
+  useFrame(({ clock }) => {
+    if(buttonMeshRef.current){
+      const time = clock.getElapsedTime()
+      // @ts-ignore
+      buttonMeshRef.current.material.uniforms.uTime.value = time
+    }
+  })
 
   return (
-    <mesh ref={buttonRef}>
+    <>
+    <mesh
+      ref={buttonMeshRef} 
+      rotation={[0, -0.3, 0]}
+      onClick={() => window.open("/swayam-resume.pdf", "_blank")}
+      position={[0.6, 0, 0]}
+      >
       <planeGeometry 
         args={[2, 1, 24, 24]}
-      />
+        />
       <shaderMaterial
         attach={"material"}
         vertexShader={buttonVertexShader}
+        fragmentShader={buttonFragmentShader}
+        uniforms={uniforms.current}
       />
-      <Html center position-z={0.05}>
-        <div className='download-btn'>Download Resume</div>
-      </Html>
     </mesh>
+    </>
   )
 }
 
 function App() {
+  const htmlButtonRef = useRef(null)
+
+
+  useEffect(() => {
+    // @ts-expect-error
+    const setTexture = async() => {
+      if(!htmlButtonRef.current) return;
+      try{
+        const canvas = await html2canvas(htmlButtonRef.current, {
+          backgroundColor: null,
+          scale: 2
+        })
+        const imageUrl = canvas.toDataURL('image/png');
+
+        // Create a temporary link element to trigger download
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = 'captured_button.png'; // Suggested filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch(e){
+        console.log(e)
+      }
+    }
+
+    // setTimeout(setTexture, 100)
+  }, [])
+
   return (
     <div>
       <Canvas
@@ -132,11 +182,14 @@ function App() {
       >
         <StarField />
         <AboutText />
-        <WavyButton />
+        <WavyButton/>
         <CameraParallax />
       </Canvas>
       <div className='side-text'>
         Welcome to my minified portfolio. I created this as a filler until I am done learning complex shaders to make my main folio. SORRY 4 DA WAIT!
+      </div>
+      <div className='resume-btn' ref={htmlButtonRef}>
+        View Resume
       </div>
     </div>
   )
